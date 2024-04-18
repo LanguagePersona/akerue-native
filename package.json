@@ -20,7 +20,10 @@
     "react-native-screens": "~3.29.0",
     "react-native-svg": "14.1.0",
     "react-world-flags": "^1.6.0",
-    "react-native-web": "~0.19.6"
+    "react-native-web": "~0.19.6",
+    "expo-image-picker": "~14.7.1",
+    "expo-av": "~13.10.5",
+    "expo-speech": "~11.7.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

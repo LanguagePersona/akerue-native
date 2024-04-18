@@ -11,14 +11,12 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import cat from "../../assets/cat.png";
+import ImagePickerButton from "../../components/ImagePicker";
+import { Link } from "expo-router";
 
 const Context = () => {
   const [textInputValue, setTextInputValue] = useState("");
   const [imageUri, setImageUri] = useState(null);
-
-  const handleImageUpload = () => {
-    // Implement image upload functionality here
-  };
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
@@ -27,19 +25,21 @@ const Context = () => {
           <Image source={cat} />
           <Text style={styles.textBox}>What do you want to talk about?</Text>
         </View>
-        <TextInput
-          style={styles.input}
-          placeholder="Type your context here..."
-          value={textInputValue}
-          onChangeText={(text) => setTextInputValue(text)}
-          multiline={true}
-        />
-        <View style={styles.uploadContainer}>
-          <TouchableOpacity
-            style={styles.uploadButton}
-            onPress={handleImageUpload}
-          >
-            <Text style={styles.uploadButtonText}>Upload Image</Text>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Type your context here..."
+            value={textInputValue}
+            onChangeText={(text) => setTextInputValue(text)}
+            multiline={true}
+          />
+          <ImagePickerButton />
+        </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button}>
+            <Link href="/loading">
+              <Text style={styles.buttonText}>Let's Go!</Text>
+            </Link>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -51,7 +51,8 @@ export default Context;
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    display: "flex",
+    flexDirection: "column",
   },
   viewTop: {
     flexDirection: "row",
@@ -71,13 +72,17 @@ const styles = StyleSheet.create({
     height: 70,
     padding: 12,
   },
+  inputContainer: {
+    alignItems: "center",
+  },
   input: {
     height: 150,
     borderWidth: 1,
     borderColor: "gray",
     borderRadius: 5,
     paddingHorizontal: 10,
-    margin: 20,
+    marginVertical: 20,
+    width: "80%",
   },
   uploadContainer: {
     alignItems: "center",
@@ -94,6 +99,23 @@ const styles = StyleSheet.create({
   uploadButtonText: {
     marginLeft: 5,
     color: "white",
+    fontWeight: "bold",
+  },
+  buttonContainer: {
+    alignItems: "center",
+  },
+  button: {
+    marginTop: 50,
+    backgroundColor: "#5589F4",
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 10,
+    width: 300,
+  },
+  buttonText: {
+    textAlign: "center",
+    color: "white",
+    fontSize: 18,
     fontWeight: "bold",
   },
 });
