@@ -4,8 +4,9 @@ import { Audio } from "expo-av";
 import { Feather } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { transcribeAudio } from "../utils/openai";
+import * as FileSystem from "expo-file-system";
 
-export default function Microphone() {
+export default function Microphone({ onRecordingStop }) {
   const [recording, setRecording] = useState();
   const [permissionResponse, requestPermission] = Audio.usePermissions();
   const [sound, setSound] = useState();
@@ -26,6 +27,7 @@ export default function Microphone() {
         Audio.RecordingOptionsPresets.HIGH_QUALITY
       );
       setRecording(recording);
+      onRecordingStop("");
       console.log("Recording started");
     } catch (err) {
       console.error("Failed to start recording", err);
@@ -48,7 +50,19 @@ export default function Microphone() {
       // Play the loaded audio file
       await sound.playAsync();
       console.log("Recording stopped and stored at", uri);
-      const { transcription, error } = await transcribeAudio(uri);
+      // Get the current date and time
+      const currentDateTime = new Date();
+
+      // Format the current date and time to include milliseconds for uniqueness
+      const formattedDateTime = currentDateTime
+        .toISOString()
+        .replace(/[-:.]/g, "");
+
+      // Use the formatted date and time in the filename
+      const localUri = `${FileSystem.documentDirectory}recording_${formattedDateTime}.m4a`;
+      await FileSystem.copyAsync({ from: uri, to: localUri });
+      const transcription = await transcribeAudio(localUri.slice(7));
+      onRecordingStop(transcription);
     } catch (error) {
       console.error("Failed to play recorded audio or transcribe", error);
     }

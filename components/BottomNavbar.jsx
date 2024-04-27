@@ -5,12 +5,12 @@ import { Feather } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import Microphone from "./Microphone";
 
-const BottomNavBar = ({ onTranslatePress, onKeyboardPress }) => {
+const BottomNavBar = ({
+  onTranslatePress,
+  onKeyboardPress,
+  setRecordedText,
+}) => {
   const [showMicrophone, setShowMicrophone] = useState(false);
-
-  const toggleMicrophone = () => {
-    setShowMicrophone(!showMicrophone);
-  };
 
   return (
     <View style={styles.container}>
@@ -18,7 +18,7 @@ const BottomNavBar = ({ onTranslatePress, onKeyboardPress }) => {
         <MaterialIcons name="translate" size={25} color="black" />
       </TouchableOpacity>
       <View style={styles.chatBoxIcons}>
-        <Microphone />
+        <Microphone onRecordingStop={setRecordedText} />
       </View>
       <TouchableOpacity onPress={onKeyboardPress} style={styles.buttons}>
         <FontAwesome5 name="keyboard" size={25} color="black" />

@@ -13,15 +13,26 @@ const Chat = () => {
   const [englishMasked, setEnglishMasked] = useState(true);
   const [recording, setRecording] = useState(false);
   const [audio, setAudio] = useState(false);
+  const [recordedText, setRecordedText] = useState("");
 
   const toggleEnglishMask = () => {
     setEnglishMasked(!englishMasked);
   };
 
-  const handleMicrophonePress = () => {
+  const handleMicrophonePressBot = () => {
     setAudio(true);
     Speech.speak("안녕하세요! 오늘 하루 어땠어요?", {
       language: "ko-KR",
+      onDone: () => {
+        setAudio(false);
+      },
+    });
+  };
+
+  const handleMicrophonePressUserResponse = () => {
+    setAudio(true);
+    Speech.speak(recordedText, {
+      language: "ko-kr",
       onDone: () => {
         setAudio(false);
       },
@@ -54,7 +65,7 @@ const Chat = () => {
           <View style={styles.textContainer}>
             <Text style={styles.textBox}>안녕하세요! 오늘 하루 어땠어요?</Text>
             <TouchableOpacity
-              onPress={handleMicrophonePress}
+              onPress={handleMicrophonePressBot}
               style={styles.chatBoxIcons}
             >
               {audio ? (
@@ -66,7 +77,9 @@ const Chat = () => {
           </View>
           <View style={styles.textContainer}>
             {englishMasked ? (
-              <Image source={spoilerImage} style={{ width: 200, height: 20 }} /> // Render spoiler image
+              <Text style={styles.textBox}>
+                Annyeonghaseyo! Oneul halu eotteolkkayo?
+              </Text>
             ) : (
               <Text style={styles.textBox}>
                 Hello! How are you doing today?
@@ -84,9 +97,48 @@ const Chat = () => {
             </TouchableOpacity>
           </View>
         </View>
+        <View style={styles.responseBox}>
+          <Text style={{ color: "gray" }}>Your Reponse:</Text>
+        </View>
+        <View style={styles.chatResponseBox}>
+          <View style={styles.textContainer}>
+            <Text style={styles.textBoxResponse}>{recordedText}</Text>
+            <TouchableOpacity
+              onPress={handleMicrophonePressUserResponse}
+              style={styles.chatBoxIcons}
+            >
+              {audio ? (
+                <MaterialIcons name="multitrack-audio" size={20} color="blue" />
+              ) : (
+                <Feather name="mic" size={20} color="black" />
+              )}
+            </TouchableOpacity>
+          </View>
+          <View style={styles.textContainer}>
+            {englishMasked ? (
+              <Text style={styles.textBoxResponse}>
+                Annyeonghaseyo! Oneul halu eotteolkkayo?
+              </Text>
+            ) : (
+              <Text style={styles.textBoxResponse}>
+                Hello! How are you doing today?
+              </Text>
+            )}
+            <TouchableOpacity
+              onPress={toggleEnglishMask}
+              style={styles.chatBoxIcons}
+            >
+              <MaterialIcons
+                name="translate"
+                size={20}
+                color={englishMasked ? "black" : "#5589F4"} // Change color based on englishMasked state
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
       <View style={styles.bottom}>
-        <BottomNavBar />
+        <BottomNavBar setRecordedText={setRecordedText} />
       </View>
     </View>
   );
@@ -126,8 +178,23 @@ const styles = StyleSheet.create({
     height: 100,
     gap: 10,
   },
+  chatResponseBox: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 40,
+    backgroundColor: "#0069E4",
+    borderRadius: 10,
+    width: 300,
+    height: 100,
+    gap: 10,
+  },
   textBox: {
     fontSize: 15,
+  },
+  textBoxResponse: {
+    fontSize: 15,
+    color: "white",
   },
   textContainer: {
     flexDirection: "row",
@@ -136,6 +203,7 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: 20,
     gap: 10,
+    overflow: "hidden",
   },
   chatBoxIcons: {
     borderRadius: 20,
@@ -150,5 +218,10 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: "100%",
     paddingBottom: 20,
+  },
+  responseBox: {
+    position: "absolute",
+    left: 70,
+    paddingTop: 60,
   },
 });
