@@ -3,10 +3,14 @@ import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { Audio } from "expo-av";
 import { Feather } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
-import { transcribeAudio } from "../utils/openai";
+import { aromanizeText, transcribeAudio, translateText } from "../utils/api";
 import * as FileSystem from "expo-file-system";
 
-export default function Microphone({ onRecordingStop }) {
+export default function Microphone({
+  onRecordingStop,
+  setAromanizedText,
+  setTranslatedText,
+}) {
   const [recording, setRecording] = useState();
   const [permissionResponse, requestPermission] = Audio.usePermissions();
   const [sound, setSound] = useState();
@@ -28,6 +32,8 @@ export default function Microphone({ onRecordingStop }) {
       );
       setRecording(recording);
       onRecordingStop("");
+      setAromanizedText("");
+      setTranslatedText("");
       console.log("Recording started");
     } catch (err) {
       console.error("Failed to start recording", err);
@@ -62,7 +68,11 @@ export default function Microphone({ onRecordingStop }) {
       const localUri = `${FileSystem.documentDirectory}recording_${formattedDateTime}.m4a`;
       await FileSystem.copyAsync({ from: uri, to: localUri });
       const transcription = await transcribeAudio(localUri.slice(7));
+      const aromanizedText = await aromanizeText(transcription);
+      const translatedText = await translateText(transcription);
       onRecordingStop(transcription);
+      setAromanizedText(aromanizedText);
+      setTranslatedText(translatedText);
     } catch (error) {
       console.error("Failed to play recorded audio or transcribe", error);
     }

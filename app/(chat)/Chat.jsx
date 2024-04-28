@@ -8,20 +8,24 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import BottomNavBar from "../../components/BottomNavbar";
 import * as Speech from "expo-speech";
+import { aromanizeText } from "../../utils/api";
 
 const Chat = () => {
   const [englishMasked, setEnglishMasked] = useState(true);
   const [recording, setRecording] = useState(false);
   const [audio, setAudio] = useState(false);
   const [recordedText, setRecordedText] = useState("");
+  const [translatedRecordedText, setTranslatedRecordedText] = useState("");
+  const [aromanizedText, setAromanizedText] = useState("");
+  const [translatedText, setTranslatedText] = useState("");
 
   const toggleEnglishMask = () => {
     setEnglishMasked(!englishMasked);
   };
 
-  const handleMicrophonePressBot = () => {
+  const handleMicrophonePressBot = (text) => {
     setAudio(true);
-    Speech.speak("안녕하세요! 오늘 하루 어땠어요?", {
+    Speech.speak(text, {
       language: "ko-KR",
       onDone: () => {
         setAudio(false);
@@ -116,13 +120,9 @@ const Chat = () => {
           </View>
           <View style={styles.textContainer}>
             {englishMasked ? (
-              <Text style={styles.textBoxResponse}>
-                Annyeonghaseyo! Oneul halu eotteolkkayo?
-              </Text>
+              <Text style={styles.textBoxResponse}>{aromanizedText}</Text>
             ) : (
-              <Text style={styles.textBoxResponse}>
-                Hello! How are you doing today?
-              </Text>
+              <Text style={styles.textBoxResponse}>{translatedText}</Text>
             )}
             <TouchableOpacity
               onPress={toggleEnglishMask}
@@ -138,7 +138,11 @@ const Chat = () => {
         </View>
       </View>
       <View style={styles.bottom}>
-        <BottomNavBar setRecordedText={setRecordedText} />
+        <BottomNavBar
+          setRecordedText={setRecordedText}
+          setAromanizedText={setAromanizedText}
+          setTranslatedText={setTranslatedText}
+        />
       </View>
     </View>
   );

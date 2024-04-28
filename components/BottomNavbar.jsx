@@ -9,6 +9,8 @@ const BottomNavBar = ({
   onTranslatePress,
   onKeyboardPress,
   setRecordedText,
+  setAromanizedText,
+  setTranslatedText,
 }) => {
   const [showMicrophone, setShowMicrophone] = useState(false);
 
@@ -18,7 +20,11 @@ const BottomNavBar = ({
         <MaterialIcons name="translate" size={25} color="black" />
       </TouchableOpacity>
       <View style={styles.chatBoxIcons}>
-        <Microphone onRecordingStop={setRecordedText} />
+        <Microphone
+          onRecordingStop={setRecordedText}
+          setAromanizedText={setAromanizedText}
+          setTranslatedText={setTranslatedText}
+        />
       </View>
       <TouchableOpacity onPress={onKeyboardPress} style={styles.buttons}>
         <FontAwesome5 name="keyboard" size={25} color="black" />
