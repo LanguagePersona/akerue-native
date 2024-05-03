@@ -33,9 +33,7 @@ export const transcribeAudio = async (audioUri) => {
 export const translateText = async (text, target, source) => {
   try {
     const payload = {
-      q: text,
-      target: "en",
-      source: "ko",
+      text: text,
     };
 
     const response = await fetch("http://localhost:3000/translate", {
@@ -49,7 +47,7 @@ export const translateText = async (text, target, source) => {
     const translatedText = await response.json();
     console.log("Translation: ", translatedText);
 
-    return translatedText.translatedText;
+    return translatedText.translation[0].text;
   } catch (error) {
     console.error("Error translating audio:", error);
     return null;
@@ -76,6 +74,29 @@ export const aromanizeText = async (text) => {
     return aromanizedText.text;
   } catch (error) {
     console.error("Error translating audio:", error);
+    return null;
+  }
+};
+
+export const chatWithBot = async (message) => {
+  try {
+    const payload = {
+      message: message,
+    };
+
+    const response = await fetch("http://localhost:3000/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const chatResponse = await response.json();
+    console.log("Chat Text: ", chatResponse.response.content);
+    return chatResponse.response.content;
+  } catch (error) {
+    console.error("Error creating text", error);
     return null;
   }
 };

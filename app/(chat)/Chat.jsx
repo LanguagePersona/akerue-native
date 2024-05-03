@@ -8,41 +8,85 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import BottomNavBar from "../../components/BottomNavbar";
 import * as Speech from "expo-speech";
-import { aromanizeText } from "../../utils/api";
+import { aromanizeText, translateText } from "../../utils/api";
+import { chatWithBot } from "../../utils/api"; // Import the chatWithBot function
 
 const Chat = () => {
-  const [englishMasked, setEnglishMasked] = useState(true);
-  const [recording, setRecording] = useState(false);
-  const [audio, setAudio] = useState(false);
+  const [responseBox, setResponseBox] = useState(false);
+  const [translationBot, setTranslationBot] = useState(true);
+  const [translationUser, setTranslationUser] = useState(true);
+  const [audioBot, setAudioBot] = useState(false);
+  const [audioUser, setAudioUser] = useState(false);
+
   const [recordedText, setRecordedText] = useState("");
-  const [translatedRecordedText, setTranslatedRecordedText] = useState("");
   const [aromanizedText, setAromanizedText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
 
-  const toggleEnglishMask = () => {
-    setEnglishMasked(!englishMasked);
+  const [chatResponseBox, setChatResponseBox] = useState(false);
+  const [chatResponse, setChatResponse] = useState("");
+  const [chatHistory, setChatHistory] = useState([]);
+  const [aromanizedResponse, setAromanizedResponse] = useState("");
+  const [translatedResponse, setTranslateResponse] = useState("");
+
+  const toggleTranslationBot = () => {
+    setTranslationBot(!translationBot);
   };
 
-  const handleMicrophonePressBot = (text) => {
-    setAudio(true);
-    Speech.speak(text, {
+  const toggleTranslationUser = () => {
+    setTranslationUser(!translationUser);
+  };
+
+  // FOR BOT
+  const handleMicrophonePressBot = async (text) => {
+    setAudioBot(true);
+    await Speech.speak(text, {
       language: "ko-KR",
       onDone: () => {
-        setAudio(false);
+        setAudioBot(false);
       },
     });
   };
 
-  const handleMicrophonePressUserResponse = () => {
-    setAudio(true);
-    Speech.speak(recordedText, {
+  // FOR USER
+  const handleMicrophonePressUserResponse = async () => {
+    setAudioUser(true);
+    await Speech.speak(recordedText, {
       language: "ko-kr",
       onDone: () => {
-        setAudio(false);
+        setAudioUser(false);
       },
     });
   };
 
+  useEffect(() => {
+    if (recordedText !== "") {
+      setResponseBox(true);
+    } else {
+      setResponseBox(false);
+    }
+  }, [recordedText]);
+
+  useEffect(() => {
+    const fetchChatResponse = async () => {
+      try {
+        const response = await chatWithBot(recordedText);
+        setChatResponse(response);
+        setChatResponseBox(true);
+        setChatHistory((prevChatHistory) => [...prevChatHistory, response]); // Update chatHistory using the previous state
+        const translateResponse = await translateText(response);
+        setTranslateResponse(translateResponse);
+
+        const aromanizedResponse = await aromanizeText(response);
+        setAromanizedResponse(aromanizedResponse);
+
+        await handleMicrophonePressBot(response);
+      } catch (error) {
+        console.error("Error chatting with bot", error);
+      }
+    };
+
+    fetchChatResponse();
+  }, [recordedText]);
   return (
     <View style={styles.container}>
       <View style={styles.top}>
@@ -65,77 +109,87 @@ const Chat = () => {
           alignItems: "center",
         }}
       >
-        <View style={styles.chatBotBox}>
-          <View style={styles.textContainer}>
-            <Text style={styles.textBox}>안녕하세요! 오늘 하루 어땠어요?</Text>
-            <TouchableOpacity
-              onPress={handleMicrophonePressBot}
-              style={styles.chatBoxIcons}
-            >
-              {audio ? (
-                <MaterialIcons name="multitrack-audio" size={20} color="blue" />
+        {chatResponseBox && (
+          <View style={styles.chatBotBox}>
+            <View style={styles.textContainer}>
+              <Text style={styles.textBox}>{chatResponse}</Text>
+              <TouchableOpacity
+                onPress={() => handleMicrophonePressBot(chatResponse)}
+                style={styles.chatBoxIcons}
+              >
+                {audioBot ? (
+                  <MaterialIcons
+                    name="multitrack-audio"
+                    size={20}
+                    color="blue"
+                  />
+                ) : (
+                  <Feather name="mic" size={20} color="black" />
+                )}
+              </TouchableOpacity>
+            </View>
+            <View style={styles.textContainer}>
+              {translationBot ? (
+                <Text style={styles.textBox}>{aromanizedResponse}</Text>
               ) : (
-                <Feather name="mic" size={20} color="black" />
+                <Text style={styles.textBox}>{translatedResponse}</Text>
               )}
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={toggleTranslationBot}
+                style={styles.chatBoxIcons}
+              >
+                <MaterialIcons
+                  name="translate"
+                  size={20}
+                  color={translationBot ? "black" : "#5589F4"} // Change color based on englishMasked state
+                />
+              </TouchableOpacity>
+            </View>
           </View>
-          <View style={styles.textContainer}>
-            {englishMasked ? (
-              <Text style={styles.textBox}>
-                Annyeonghaseyo! Oneul halu eotteolkkayo?
-              </Text>
-            ) : (
-              <Text style={styles.textBox}>
-                Hello! How are you doing today?
-              </Text>
-            )}
-            <TouchableOpacity
-              onPress={toggleEnglishMask}
-              style={styles.chatBoxIcons}
-            >
-              <MaterialIcons
-                name="translate"
-                size={20}
-                color={englishMasked ? "black" : "#5589F4"} // Change color based on englishMasked state
-              />
-            </TouchableOpacity>
+        )}
+        {responseBox && (
+          <View style={styles.responseBox}>
+            <Text style={{ color: "gray" }}>Your Reponse:</Text>
           </View>
-        </View>
-        <View style={styles.responseBox}>
-          <Text style={{ color: "gray" }}>Your Reponse:</Text>
-        </View>
-        <View style={styles.chatResponseBox}>
-          <View style={styles.textContainer}>
-            <Text style={styles.textBoxResponse}>{recordedText}</Text>
-            <TouchableOpacity
-              onPress={handleMicrophonePressUserResponse}
-              style={styles.chatBoxIcons}
-            >
-              {audio ? (
-                <MaterialIcons name="multitrack-audio" size={20} color="blue" />
+        )}
+        {responseBox && (
+          <View style={styles.chatResponseBox}>
+            <View style={styles.textContainer}>
+              <Text style={styles.textBoxResponse}>{recordedText}</Text>
+              <TouchableOpacity
+                onPress={handleMicrophonePressUserResponse}
+                style={styles.chatBoxIcons}
+              >
+                {audioUser ? (
+                  <MaterialIcons
+                    name="multitrack-audio"
+                    size={20}
+                    color="blue"
+                  />
+                ) : (
+                  <Feather name="mic" size={20} color="black" />
+                )}
+              </TouchableOpacity>
+            </View>
+            <View style={styles.textContainer}>
+              {translationUser ? (
+                <Text style={styles.textBoxResponse}>{aromanizedText}</Text>
               ) : (
-                <Feather name="mic" size={20} color="black" />
+                <Text style={styles.textBoxResponse}>{translatedText}</Text>
               )}
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={toggleTranslationUser}
+                style={styles.chatBoxIcons}
+              >
+                <MaterialIcons
+                  name="translate"
+                  size={20}
+                  color={translationUser ? "black" : "#5589F4"} // Change color based on englishMasked state
+                />
+              </TouchableOpacity>
+            </View>
           </View>
-          <View style={styles.textContainer}>
-            {englishMasked ? (
-              <Text style={styles.textBoxResponse}>{aromanizedText}</Text>
-            ) : (
-              <Text style={styles.textBoxResponse}>{translatedText}</Text>
-            )}
-            <TouchableOpacity
-              onPress={toggleEnglishMask}
-              style={styles.chatBoxIcons}
-            >
-              <MaterialIcons
-                name="translate"
-                size={20}
-                color={englishMasked ? "black" : "#5589F4"} // Change color based on englishMasked state
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
+        )}
       </View>
       <View style={styles.bottom}>
         <BottomNavBar
@@ -161,7 +215,7 @@ const styles = StyleSheet.create({
   },
   avatar: {
     width: 350,
-    height: 350,
+    height: 260,
     resizeMode: "contain",
   },
   help: {
