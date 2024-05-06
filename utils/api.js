@@ -78,6 +78,7 @@ export const aromanizeText = async (text) => {
   }
 };
 
+// RESPOND WITH TRANSLATION AND AROMANIZATION
 export const chatWithBot = async (message) => {
   try {
     const payload = {
@@ -93,10 +94,33 @@ export const chatWithBot = async (message) => {
     });
 
     const chatResponse = await response.json();
-    console.log("Chat Text: ", chatResponse.response.content);
-    return chatResponse.response.content;
+    return chatResponse;
   } catch (error) {
     console.error("Error creating text", error);
+    return null;
+  }
+};
+
+// SUGGESTED RESPONSE
+export const getSuggestedResponse = async (message) => {
+  try {
+    const payload = {
+      message: message,
+    };
+
+    const response = await fetch("http://localhost:3000/suggestion", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const suggestedResponse = await response.json();
+
+    return suggestedResponse;
+  } catch (error) {
+    console.error("Error generating suggestion", error);
     return null;
   }
 };

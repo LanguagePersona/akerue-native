@@ -8,13 +8,18 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import BottomNavBar from "../../components/BottomNavbar";
 import * as Speech from "expo-speech";
-import { aromanizeText, translateText } from "../../utils/api";
+import {
+  aromanizeText,
+  getSuggestedResponse,
+  translateText,
+} from "../../utils/api";
 import { chatWithBot } from "../../utils/api"; // Import the chatWithBot function
 
 const Chat = () => {
   const [responseBox, setResponseBox] = useState(false);
   const [translationBot, setTranslationBot] = useState(true);
   const [translationUser, setTranslationUser] = useState(true);
+  const [suggestion, setSuggestion] = useState(true);
   const [audioBot, setAudioBot] = useState(false);
   const [audioUser, setAudioUser] = useState(false);
 
@@ -28,12 +33,21 @@ const Chat = () => {
   const [aromanizedResponse, setAromanizedResponse] = useState("");
   const [translatedResponse, setTranslateResponse] = useState("");
 
+  const [suggestedResponse, setSuggestedResponse] = useState("");
+  const [aromanizedSuggestion, setAromanizedSuggestion] = useState("");
+  const [translatedSuggestion, setTranslatedSuggestion] = useState("");
+  const [audioSuggestion, setAudioSuggestion] = useState(false);
+
   const toggleTranslationBot = () => {
     setTranslationBot(!translationBot);
   };
 
   const toggleTranslationUser = () => {
     setTranslationUser(!translationUser);
+  };
+
+  const toggleTranslationSuggestion = () => {
+    setSuggestion(!suggestion);
   };
 
   // FOR BOT
@@ -58,6 +72,16 @@ const Chat = () => {
     });
   };
 
+  const handleMicrophoneSuggestedResponse = async () => {
+    setAudioSuggestion(true);
+    await Speech.speak(suggestedResponse, {
+      language: "ko-kr",
+      onDone: () => {
+        setAudioSuggestion(false);
+      },
+    });
+  };
+
   useEffect(() => {
     if (recordedText !== "") {
       setResponseBox(true);
@@ -69,17 +93,22 @@ const Chat = () => {
   useEffect(() => {
     const fetchChatResponse = async () => {
       try {
-        const response = await chatWithBot(recordedText);
+        const result = await chatWithBot(recordedText);
+        const response = result.response.content;
+
         setChatResponse(response);
         setChatResponseBox(true);
-        setChatHistory((prevChatHistory) => [...prevChatHistory, response]); // Update chatHistory using the previous state
-        const translateResponse = await translateText(response);
-        setTranslateResponse(translateResponse);
-
-        const aromanizedResponse = await aromanizeText(response);
-        setAromanizedResponse(aromanizedResponse);
+        setChatHistory((prevChatHistory) => [...prevChatHistory, response]);
+        setTranslateResponse(result.translatedMessage[0].text);
+        setAromanizedResponse(result.aromanizedMessage);
 
         await handleMicrophonePressBot(response);
+
+        const suggestionResult = await getSuggestedResponse(response);
+        console.log(suggestionResult);
+        setSuggestedResponse(suggestionResult.suggestions);
+        setAromanizedSuggestion(suggestionResult.aromanizedResponse);
+        setTranslatedSuggestion(suggestionResult.translatedResponse);
       } catch (error) {
         console.error("Error chatting with bot", error);
       }
@@ -190,6 +219,54 @@ const Chat = () => {
             </View>
           </View>
         )}
+
+        {suggestedResponse && (
+          <View style={styles.suggestedResponse}>
+            <Text style={{ color: "gray" }}>Suggested Reponse:</Text>
+          </View>
+        )}
+        {suggestedResponse && (
+          <View style={styles.suggestedResponseBox}>
+            <View style={styles.textContainer}>
+              <Text style={styles.textBoxResponse}>{suggestedResponse}</Text>
+              <TouchableOpacity
+                onPress={handleMicrophoneSuggestedResponse}
+                style={styles.chatBoxIcons}
+              >
+                {audioUser ? (
+                  <MaterialIcons
+                    name="multitrack-audio"
+                    size={20}
+                    color="blue"
+                  />
+                ) : (
+                  <Feather name="mic" size={20} color="black" />
+                )}
+              </TouchableOpacity>
+            </View>
+            <View style={styles.textContainer}>
+              {suggestion ? (
+                <Text style={styles.textBoxResponse}>
+                  {aromanizedSuggestion}
+                </Text>
+              ) : (
+                <Text style={styles.textBoxResponse}>
+                  {translatedSuggestion}
+                </Text>
+              )}
+              <TouchableOpacity
+                onPress={toggleTranslationSuggestion}
+                style={styles.chatBoxIcons}
+              >
+                <MaterialIcons
+                  name="translate"
+                  size={20}
+                  color={suggestion ? "black" : "#5589F4"} // Change color based on englishMasked state
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
       </View>
       <View style={styles.bottom}>
         <BottomNavBar
@@ -281,5 +358,22 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 70,
     paddingTop: 60,
+  },
+  suggestedResponseBox: {
+    position: "absolute",
+    top: 320,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#5589F4",
+    borderRadius: 10,
+    width: 370,
+    height: 100,
+    gap: 10,
+  },
+  suggestedResponse: {
+    position: "absolute",
+    top: 300,
+    left: 40,
   },
 });
