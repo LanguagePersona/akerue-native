@@ -10,6 +10,7 @@ export default function Microphone({
   onRecordingStop,
   setAromanizedText,
   setTranslatedText,
+  setResponseBox,
 }) {
   const [recording, setRecording] = useState();
   const [permissionResponse, requestPermission] = Audio.usePermissions();
@@ -25,13 +26,12 @@ export default function Microphone({
         allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
       });
-
+      setResponseBox(false);
       console.log("Starting recording..");
       const { recording } = await Audio.Recording.createAsync(
         Audio.RecordingOptionsPresets.HIGH_QUALITY
       );
       setRecording(recording);
-      onRecordingStop("");
       setAromanizedText("");
       setTranslatedText("");
       console.log("Recording started");
@@ -42,6 +42,7 @@ export default function Microphone({
 
   async function stopRecording() {
     console.log("Stopping recording..");
+    setResponseBox(true);
     setRecording(undefined);
     await recording.stopAndUnloadAsync();
     await Audio.setAudioModeAsync({

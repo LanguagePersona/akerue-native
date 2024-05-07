@@ -83,14 +83,6 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    if (recordedText !== "") {
-      setResponseBox(true);
-    } else {
-      setResponseBox(false);
-    }
-  }, [recordedText]);
-
-  useEffect(() => {
     const fetchChatResponse = async () => {
       try {
         const result = await chatWithBot(recordedText);
@@ -233,7 +225,7 @@ const Chat = () => {
                 onPress={handleMicrophoneSuggestedResponse}
                 style={styles.chatBoxIcons}
               >
-                {audioUser ? (
+                {audioSuggestion ? (
                   <MaterialIcons
                     name="multitrack-audio"
                     size={20}
@@ -273,6 +265,7 @@ const Chat = () => {
           setRecordedText={setRecordedText}
           setAromanizedText={setAromanizedText}
           setTranslatedText={setTranslatedText}
+          setResponseBox={setResponseBox}
         />
       </View>
     </View>
