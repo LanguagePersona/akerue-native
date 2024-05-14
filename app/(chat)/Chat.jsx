@@ -1,4 +1,11 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import React, { useState, useEffect } from "react";
 import avatar from "../../assets/Avatar.png";
 import spoilerImage from "../../assets/spoiler.png"; // Import the spoiler image
@@ -14,6 +21,7 @@ import {
   translateText,
 } from "../../utils/api";
 import { chatWithBot } from "../../utils/api"; // Import the chatWithBot function
+import { Link } from "expo-router";
 
 const Chat = () => {
   const [responseBox, setResponseBox] = useState(false);
@@ -115,7 +123,11 @@ const Chat = () => {
         <View style={styles.help}>
           <AntDesign name="questioncircleo" size={30} color="#5589F4" />
           <Feather name="bookmark" size={30} color="#5589F4" />
-          <AntDesign name="linechart" size={30} color="#5589F4" />
+          <View>
+            <Link href="/analytics">
+              <AntDesign name="linechart" size={30} color="#5589F4" />
+            </Link>
+          </View>
           <MaterialCommunityIcons
             name="lightbulb-on-outline"
             size={30}
@@ -149,6 +161,7 @@ const Chat = () => {
                 )}
               </TouchableOpacity>
             </View>
+
             <View style={styles.textContainer}>
               {translationBot ? (
                 <Text style={styles.textBox}>{aromanizedResponse}</Text>
@@ -273,7 +286,6 @@ const Chat = () => {
 };
 
 export default Chat;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -303,7 +315,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#D9E6FF",
     borderRadius: 10,
     width: 300,
-    height: 100,
+    padding: 10,
     gap: 10,
   },
   chatResponseBox: {
@@ -314,29 +326,33 @@ const styles = StyleSheet.create({
     backgroundColor: "#0069E4",
     borderRadius: 10,
     width: 300,
-    height: 100,
+    padding: 10,
     gap: 10,
   },
   textBox: {
     fontSize: 15,
+    flexGrow: 1,
+    flexShrink: 1,
+    maxWidth: "85%",
   },
   textBoxResponse: {
     fontSize: 15,
     color: "white",
+    flexGrow: 1,
+    flexShrink: 1,
+    maxWidth: "85%",
   },
   textContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     width: "100%",
-    paddingHorizontal: 20,
-    gap: 10,
-    overflow: "hidden",
   },
   chatBoxIcons: {
     borderRadius: 20,
     backgroundColor: "#B9B9C5",
     padding: 4,
+    flexShrink: 0,
   },
   bottom: {
     display: "flex",
@@ -361,7 +377,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#5589F4",
     borderRadius: 10,
     width: 370,
-    height: 100,
+    padding: 10,
     gap: 10,
   },
   suggestedResponse: {
