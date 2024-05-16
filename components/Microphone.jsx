@@ -11,6 +11,8 @@ export default function Microphone({
   setAromanizedText,
   setTranslatedText,
   setResponseBox,
+  suggestedResponse,
+  setGrade,
 }) {
   const [recording, setRecording] = useState();
   const [permissionResponse, requestPermission] = Audio.usePermissions();
@@ -34,6 +36,7 @@ export default function Microphone({
       setRecording(recording);
       setAromanizedText("");
       setTranslatedText("");
+      setGrade("");
       console.log("Recording started");
     } catch (err) {
       console.error("Failed to start recording", err);
@@ -68,12 +71,20 @@ export default function Microphone({
       // Use the formatted date and time in the filename
       const localUri = `${FileSystem.documentDirectory}recording_${formattedDateTime}.m4a`;
       await FileSystem.copyAsync({ from: uri, to: localUri });
-      const transcription = await transcribeAudio(localUri.slice(7));
-      const aromanizedText = await aromanizeText(transcription);
-      const translatedText = await translateText(transcription);
-      onRecordingStop(transcription);
+      const transcription = await transcribeAudio(
+        localUri.slice(7),
+        suggestedResponse
+      );
+      const aromanizedText = await aromanizeText(
+        transcription.transcription.text
+      );
+      const translatedText = await translateText(
+        transcription.transcription.text
+      );
+      onRecordingStop(transcription.transcription.text);
       setAromanizedText(aromanizedText);
       setTranslatedText(translatedText);
+      setGrade(transcription.grade);
     } catch (error) {
       console.error("Failed to play recorded audio or transcribe", error);
     }

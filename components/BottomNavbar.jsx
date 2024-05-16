@@ -12,6 +12,8 @@ const BottomNavBar = ({
   setAromanizedText,
   setTranslatedText,
   setResponseBox,
+  suggestedResponse,
+  setGrade,
 }) => {
   const [showMicrophone, setShowMicrophone] = useState(false);
 
@@ -26,6 +28,8 @@ const BottomNavBar = ({
           setAromanizedText={setAromanizedText}
           setTranslatedText={setTranslatedText}
           setResponseBox={setResponseBox}
+          suggestedResponse={suggestedResponse}
+          setGrade={setGrade}
         />
       </View>
       <TouchableOpacity onPress={onKeyboardPress} style={styles.buttons}>

@@ -2,10 +2,11 @@ import OpenAI from "openai";
 import * as FileSystem from "expo-file-system";
 import axios from "axios";
 
-export const transcribeAudio = async (audioUri) => {
+export const transcribeAudio = async (audioUri, correctSentence) => {
   try {
     const payload = {
       audioUri: audioUri,
+      correctSentence: correctSentence,
     };
 
     console.log(JSON.stringify(payload));
@@ -21,9 +22,8 @@ export const transcribeAudio = async (audioUri) => {
       throw new Error("Failed to transcribe audio");
     }
     const transcription = await response.json();
-    console.log("Transcription:", transcription);
-
-    return transcription.transcription.text;
+    console.log(transcription);
+    return transcription;
   } catch (error) {
     console.error("Error transcribing audio:", error);
     return null;

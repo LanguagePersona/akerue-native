@@ -46,6 +46,7 @@ const Chat = () => {
   const [translatedSuggestion, setTranslatedSuggestion] = useState("");
   const [audioSuggestion, setAudioSuggestion] = useState(false);
 
+  const [grade, setGrade] = useState("");
   const toggleTranslationBot = () => {
     setTranslationBot(!translationBot);
   };
@@ -187,6 +188,20 @@ const Chat = () => {
           </View>
         )}
         {responseBox && (
+          <View style={styles.grading}>
+            <Text
+              style={{
+                color: "gray",
+                fontWeight: "bold",
+                fontSize: 17,
+                color: "red",
+              }}
+            >
+              Grade: {grade}
+            </Text>
+          </View>
+        )}
+        {responseBox && (
           <View style={styles.chatResponseBox}>
             <View style={styles.textContainer}>
               <Text style={styles.textBoxResponse}>{recordedText}</Text>
@@ -279,6 +294,8 @@ const Chat = () => {
           setAromanizedText={setAromanizedText}
           setTranslatedText={setTranslatedText}
           setResponseBox={setResponseBox}
+          suggestedResponse={suggestedResponse}
+          setGrade={setGrade}
         />
       </View>
     </View>
@@ -322,7 +339,7 @@ const styles = StyleSheet.create({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 40,
+    marginTop: 50,
     backgroundColor: "#0069E4",
     borderRadius: 10,
     width: 300,
@@ -366,6 +383,11 @@ const styles = StyleSheet.create({
   responseBox: {
     position: "absolute",
     left: 70,
+    paddingTop: 60,
+  },
+  grading: {
+    position: "absolute",
+    right: 73,
     paddingTop: 60,
   },
   suggestedResponseBox: {
