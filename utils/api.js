@@ -105,7 +105,7 @@ export const chatWithBot = async (message) => {
 export const getSuggestedResponse = async (message) => {
   try {
     const payload = {
-      message: message,
+      response: message,
     };
 
     const response = await fetch("http://localhost:3000/suggestion", {

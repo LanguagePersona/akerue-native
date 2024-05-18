@@ -95,13 +95,15 @@ const Chat = () => {
     const fetchChatResponse = async () => {
       try {
         const result = await chatWithBot(recordedText);
-        const response = result.response.content;
+        const response = result.response;
 
-        setChatResponse(response);
-        setChatResponseBox(true);
-        setChatHistory((prevChatHistory) => [...prevChatHistory, response]);
-        setTranslateResponse(result.translatedMessage[0].text);
-        setAromanizedResponse(result.aromanizedMessage);
+        await Promise.all([
+          setChatResponse(response),
+          setChatHistory((prevChatHistory) => [...prevChatHistory, response]),
+          setTranslateResponse(result.translatedMessage[0].text),
+          setAromanizedResponse(result.aromanizedMessage),
+          setChatResponseBox(true),
+        ]);
 
         await handleMicrophonePressBot(response);
 
@@ -290,11 +292,14 @@ const Chat = () => {
       </View>
       <View style={styles.bottom}>
         <BottomNavBar
+          setAromanizedResponse={setAromanizedResponse}
+          setTranslateResponse={setTranslateResponse}
           setRecordedText={setRecordedText}
           setAromanizedText={setAromanizedText}
           setTranslatedText={setTranslatedText}
           setResponseBox={setResponseBox}
           suggestedResponse={suggestedResponse}
+          setChatResponse={setChatResponse}
           setGrade={setGrade}
         />
       </View>

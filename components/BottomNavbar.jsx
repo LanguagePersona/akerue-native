@@ -8,11 +8,14 @@ import Microphone from "./Microphone";
 const BottomNavBar = ({
   onTranslatePress,
   onKeyboardPress,
+  setAromanizedResponse,
+  setTranslateResponse,
   setRecordedText,
   setAromanizedText,
   setTranslatedText,
   setResponseBox,
   suggestedResponse,
+  setChatResponse,
   setGrade,
 }) => {
   const [showMicrophone, setShowMicrophone] = useState(false);
@@ -24,11 +27,14 @@ const BottomNavBar = ({
       </TouchableOpacity>
       <View style={styles.chatBoxIcons}>
         <Microphone
+          setAromanizedResponse={setAromanizedResponse}
+          setTranslateResponse={setTranslateResponse}
           onRecordingStop={setRecordedText}
           setAromanizedText={setAromanizedText}
           setTranslatedText={setTranslatedText}
           setResponseBox={setResponseBox}
           suggestedResponse={suggestedResponse}
+          setChatResponse={setChatResponse}
           setGrade={setGrade}
         />
       </View>

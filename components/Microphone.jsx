@@ -7,11 +7,14 @@ import { aromanizeText, transcribeAudio, translateText } from "../utils/api";
 import * as FileSystem from "expo-file-system";
 
 export default function Microphone({
+  setAromanizedResponse,
+  setTranslateResponse,
   onRecordingStop,
   setAromanizedText,
   setTranslatedText,
   setResponseBox,
   suggestedResponse,
+  setChatResponse,
   setGrade,
 }) {
   const [recording, setRecording] = useState();
@@ -34,9 +37,12 @@ export default function Microphone({
         Audio.RecordingOptionsPresets.HIGH_QUALITY
       );
       setRecording(recording);
+      setChatResponse("");
       setAromanizedText("");
       setTranslatedText("");
       setGrade("");
+      setAromanizedResponse("");
+      setTranslateResponse("");
       console.log("Recording started");
     } catch (err) {
       console.error("Failed to start recording", err);
@@ -45,7 +51,6 @@ export default function Microphone({
 
   async function stopRecording() {
     console.log("Stopping recording..");
-    setResponseBox(true);
     setRecording(undefined);
     await recording.stopAndUnloadAsync();
     await Audio.setAudioModeAsync({
@@ -85,6 +90,7 @@ export default function Microphone({
       setAromanizedText(aromanizedText);
       setTranslatedText(translatedText);
       setGrade(transcription.grade);
+      setResponseBox(true);
     } catch (error) {
       console.error("Failed to play recorded audio or transcribe", error);
     }
