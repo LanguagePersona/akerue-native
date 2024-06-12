@@ -9,14 +9,16 @@ import {
   KeyboardAvoidingView,
   ScrollView,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Switch } from "react-native-switch";
 import cat from "../../assets/cat.png";
 import ImagePickerButton from "../../components/ImagePicker";
 import { Link } from "expo-router";
 
 const Context = () => {
   const [textInputValue, setTextInputValue] = useState("");
-  const [imageUri, setImageUri] = useState(null);
+  const [additionalTextBoxVisible, setAdditionalTextBoxVisible] =
+    useState(false);
+  const [additionalTextInputValue, setAdditionalTextInputValue] = useState("");
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
@@ -33,7 +35,58 @@ const Context = () => {
             onChangeText={(text) => setTextInputValue(text)}
             multiline={true}
           />
-          <ImagePickerButton />
+          <View>
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 30,
+              }}
+            >
+              <Text style={styles.textBoxGoal}>
+                Do you have a goal in mind?
+              </Text>
+              <Switch
+                value={additionalTextBoxVisible}
+                onValueChange={(val) => setAdditionalTextBoxVisible(val)}
+                disabled={false}
+                activeText={"ON"}
+                inActiveText={"OFF"}
+                circleSize={30}
+                barHeight={35}
+                circleBorderWidth={0}
+                backgroundActive={"#5589F4"}
+                backgroundInactive={"#D9E6FF"}
+                circleActiveColor={"white"}
+                circleInActiveColor={"#5589F4"}
+                changeValueImmediately={true}
+                innerCircleStyle={{
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+                outerCircleStyle={{}}
+                renderActiveText={false}
+                renderInActiveText={false}
+                switchLeftPx={2.5}
+                switchRightPx={2.5}
+                switchWidthMultiplier={2}
+                switchBorderRadius={30}
+              />
+            </View>
+
+            {additionalTextBoxVisible && (
+              <TextInput
+                style={styles.input}
+                placeholder="What is your goal?"
+                value={additionalTextInputValue}
+                onChangeText={(text) => setAdditionalTextInputValue(text)}
+                multiline={true}
+              />
+            )}
+          </View>
+
+          {/* <ImagePickerButton /> */}
         </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button}>
@@ -72,40 +125,45 @@ const styles = StyleSheet.create({
     height: 70,
     padding: 12,
   },
+  textBoxGoal: {
+    textAlign: "center",
+    fontSize: 18,
+    color: "black",
+    backgroundColor: "#D9E6FF",
+    borderRadius: 10,
+    overflow: "hidden",
+    width: 250,
+    height: 50,
+    padding: 12,
+  },
   inputContainer: {
     alignItems: "center",
   },
   input: {
-    height: 150,
+    height: 75,
     borderWidth: 1,
     borderColor: "gray",
     borderRadius: 5,
     paddingHorizontal: 10,
     marginVertical: 20,
-    width: "80%",
+    width: 350,
   },
-  uploadContainer: {
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  uploadButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#5589F4",
+  toggleButton: {
+    backgroundColor: "#007BFF",
+    padding: 10,
     borderRadius: 5,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
+    marginVertical: 10,
   },
-  uploadButtonText: {
-    marginLeft: 5,
+  toggleButtonText: {
     color: "white",
-    fontWeight: "bold",
+    fontSize: 16,
+    textAlign: "center",
   },
   buttonContainer: {
     alignItems: "center",
   },
   button: {
-    marginTop: 50,
+    marginTop: 25,
     backgroundColor: "#5589F4",
     paddingVertical: 15,
     paddingHorizontal: 30,
