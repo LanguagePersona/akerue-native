@@ -147,6 +147,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginVertical: 20,
     width: 350,
+    padding: 8,
   },
   toggleButton: {
     backgroundColor: "#007BFF",
@@ -168,9 +169,12 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 10,
-    width: 300,
+    width: 350,
   },
   buttonText: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     textAlign: "center",
     color: "white",
     fontSize: 18,

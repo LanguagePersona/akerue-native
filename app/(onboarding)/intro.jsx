@@ -6,10 +6,12 @@ import { StatusBar } from "expo-status-bar";
 const Intro = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.textBox}>Let's create your custom conversation?</Text>
+      <Text style={styles.textBox}>
+        Let's create your custom Korean conversation?
+      </Text>
       <Image source={cat} style={styles.logo} />
       <TouchableOpacity style={styles.button}>
-        <Link href="/language">
+        <Link href="/practice">
           <Text style={styles.buttonText}>Let's Go!</Text>
         </Link>
       </TouchableOpacity>
@@ -37,13 +39,16 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   button: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     position: "absolute",
     bottom: 250,
     backgroundColor: "#5589F4",
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 10,
-    width: 300,
+    width: 200,
   },
   buttonText: {
     textAlign: "center",

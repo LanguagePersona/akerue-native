@@ -186,7 +186,7 @@ const Chat = () => {
         )}
         {responseBox && (
           <View style={styles.responseBox}>
-            <Text style={{ color: "gray" }}>Your Reponse:</Text>
+            <Text style={{ color: "gray" }}>Feedback:</Text>
           </View>
         )}
         {responseBox && (
@@ -203,10 +203,12 @@ const Chat = () => {
             </Text>
           </View>
         )}
-        {responseBox && (
+        {responseBox && grade === "A" && (
           <View style={styles.chatResponseBox}>
             <View style={styles.textContainer}>
-              <Text style={styles.textBoxResponse}>{recordedText}</Text>
+              <Text style={styles.textBoxResponse}>
+                Your pronunciation is perfect! Keep it up!
+              </Text>
               <TouchableOpacity
                 onPress={handleMicrophonePressUserResponse}
                 style={styles.chatBoxIcons}
@@ -222,21 +224,52 @@ const Chat = () => {
                 )}
               </TouchableOpacity>
             </View>
+          </View>
+        )}
+        {responseBox && (grade === "B" || grade === "C") && (
+          <View style={styles.chatResponseBoxImproved}>
             <View style={styles.textContainer}>
-              {translationUser ? (
-                <Text style={styles.textBoxResponse}>{aromanizedText}</Text>
-              ) : (
-                <Text style={styles.textBoxResponse}>{translatedText}</Text>
-              )}
+              <Text style={styles.textBoxResponse}>
+                Your pronunciation can be improved!{"\n"}Press the audio button
+                to hear the correct pronunciation!
+              </Text>
               <TouchableOpacity
-                onPress={toggleTranslationUser}
+                onPress={handleMicrophonePressUserResponse}
                 style={styles.chatBoxIcons}
               >
-                <MaterialIcons
-                  name="translate"
-                  size={20}
-                  color={translationUser ? "black" : "#5589F4"} // Change color based on englishMasked state
-                />
+                {audioUser ? (
+                  <MaterialIcons
+                    name="multitrack-audio"
+                    size={20}
+                    color="blue"
+                  />
+                ) : (
+                  <Feather name="mic" size={20} color="black" />
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+        {responseBox && (grade === "D" || grade === "F") && (
+          <View style={styles.chatResponseBoxFail}>
+            <View style={styles.textContainer}>
+              <Text style={styles.textBoxResponse}>
+                Your pronunciation is wrong! {"\n"}Press the audio button to
+                hear the correct pronunciation!
+              </Text>
+              <TouchableOpacity
+                onPress={handleMicrophonePressUserResponse}
+                style={styles.chatBoxIcons}
+              >
+                {audioUser ? (
+                  <MaterialIcons
+                    name="multitrack-audio"
+                    size={20}
+                    color="blue"
+                  />
+                ) : (
+                  <Feather name="mic" size={20} color="black" />
+                )}
               </TouchableOpacity>
             </View>
           </View>
@@ -351,6 +384,28 @@ const styles = StyleSheet.create({
     padding: 10,
     gap: 10,
   },
+  chatResponseBoxFail: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 50,
+    backgroundColor: "#e84242",
+    borderRadius: 10,
+    width: 300,
+    padding: 10,
+    gap: 10,
+  },
+  chatResponseBoxImproved: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 50,
+    backgroundColor: "#e88721",
+    borderRadius: 10,
+    width: 300,
+    padding: 10,
+    gap: 10,
+  },
   textBox: {
     fontSize: 15,
     flexGrow: 1,
@@ -363,6 +418,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 1,
     maxWidth: "85%",
+    justifyContent: "space-between",
   },
   textContainer: {
     flexDirection: "row",
@@ -388,12 +444,12 @@ const styles = StyleSheet.create({
   responseBox: {
     position: "absolute",
     left: 70,
-    paddingTop: 60,
+    paddingTop: 75,
   },
   grading: {
     position: "absolute",
     right: 73,
-    paddingTop: 60,
+    paddingTop: 75,
   },
   suggestedResponseBox: {
     position: "absolute",
